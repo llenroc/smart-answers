@@ -13,7 +13,7 @@ class MarriageAbroadTest < ActiveSupport::TestCase
   setup do
     stub_shared_component_locales
 
-    @location_slugs = %w(albania american-samoa anguilla argentina armenia aruba australia austria azerbaijan bahamas belarus belgium bonaire-st-eustatius-saba brazil british-indian-ocean-territory burma burundi cambodia canada chile china costa-rica cote-d-ivoire croatia colombia cyprus czech-republic democratic-republic-of-the-congo denmark ecuador egypt estonia finland france gambia germany greece hong-kong indonesia iran ireland italy japan jordan kazakhstan kosovo kyrgyzstan laos latvia lebanon lithuania luxembourg macao macedonia maldives malta mayotte mexico monaco montenegro morocco netherlands nicaragua north-korea norway oman guatemala paraguay peru philippines poland portugal qatar romania russia rwanda saint-barthelemy san-marino saudi-arabia serbia seychelles slovakia slovenia somalia south-africa st-maarten st-martin south-korea spain sweden switzerland tanzania thailand tunisia turkey turkmenistan ukraine united-arab-emirates usa uzbekistan vietnam wallis-and-futuna yemen zimbabwe).uniq
+    @location_slugs = %w(albania american-samoa anguilla argentina armenia aruba australia austria azerbaijan bahamas belarus belgium bonaire-st-eustatius-saba brazil british-indian-ocean-territory burma burundi cambodia canada chile china costa-rica cote-d-ivoire croatia colombia cyprus czech-republic democratic-republic-of-the-congo denmark ecuador egypt estonia finland france gambia germany greece hong-kong indonesia iran ireland italy japan jordan kazakhstan kosovo kyrgyzstan laos latvia lebanon lithuania luxembourg macao macedonia maldives malta mayotte mexico moldova monaco montenegro morocco netherlands nicaragua north-korea norway oman guatemala paraguay peru philippines poland portugal qatar romania russia rwanda saint-barthelemy san-marino saudi-arabia serbia seychelles slovakia slovenia somalia south-africa st-maarten st-martin south-korea spain sweden switzerland tanzania thailand tunisia turkey turkmenistan ukraine united-arab-emirates usa uzbekistan vietnam wallis-and-futuna yemen zimbabwe).uniq
     stub_world_locations(@location_slugs)
     setup_for_testing_flow SmartAnswer::MarriageAbroadFlow
   end
@@ -2169,6 +2169,26 @@ class MarriageAbroadTest < ActiveSupport::TestCase
       add_response 'partner_other'
       add_response 'same_sex'
       assert_current_node :outcome_marriage_abroad_in_country
+    end
+  end
+
+  context "Marrying in Moldova" do
+    setup do
+      add_response 'moldova'
+    end
+
+    outcome = :outcome_marriage_abroad_in_country
+    ['uk', 'ceremony_country', 'third_country'].each do |location|
+      ['partner_british', 'partner_local', 'partner_other'].each do |partner|
+        ['opposite_sex', 'same_sex'].each do |sex|
+          should "bring a user marrying in #{location} to #{sex} partner (i.e #{partner}) to #{outcome}" do
+            add_response location
+            add_response partner
+            add_response sex
+            assert_current_node outcome
+          end
+        end
+      end
     end
   end
 
